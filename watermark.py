@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add a text watermark to the bottom-right corner of an image."""
+"""Add a centered text watermark, outlined so it reads on any background."""
 import argparse
 
 from PIL import Image, ImageDraw, ImageFont
@@ -11,13 +11,15 @@ def add_watermark(image_path, text, output, opacity=128):
     draw = ImageDraw.Draw(overlay)
     size = max(12, base.size[1] // 20)
     font = ImageFont.load_default(size=size)
-    m = size // 2
+    # white fill + black outline stays readable on light and dark backgrounds
     draw.text(
-        (base.size[0] - m, base.size[1] - m),
+        (base.size[0] / 2, base.size[1] / 2),
         text,
         font=font,
         fill=(255, 255, 255, opacity),
-        anchor="rb",
+        anchor="mm",
+        stroke_width=max(1, size // 12),
+        stroke_fill=(0, 0, 0, opacity),
     )
     Image.alpha_composite(base, overlay).convert("RGB").save(output)
 
